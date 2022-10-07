@@ -1,0 +1,11 @@
+\\wsl$\Ubuntu\home\jam\workspace\rust\finance\target\debug\deps\futures_channel-2d535b3aabf4294b.rmeta: C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\lib.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\lock.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\mpsc\mod.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\mpsc\queue.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\oneshot.rs
+
+\\wsl$\Ubuntu\home\jam\workspace\rust\finance\target\debug\deps\libfutures_channel-2d535b3aabf4294b.rlib: C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\lib.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\lock.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\mpsc\mod.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\mpsc\queue.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\oneshot.rs
+
+\\wsl$\Ubuntu\home\jam\workspace\rust\finance\target\debug\deps\futures_channel-2d535b3aabf4294b.d: C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\lib.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\lock.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\mpsc\mod.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\mpsc\queue.rs C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\oneshot.rs
+
+C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\lib.rs:
+C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\lock.rs:
+C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\mpsc\mod.rs:
+C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\mpsc\queue.rs:
+C:\Users\jaemi\.cargo\registry\src\github.com-1ecc6299db9ec823\futures-channel-0.3.24\src\oneshot.rs:
