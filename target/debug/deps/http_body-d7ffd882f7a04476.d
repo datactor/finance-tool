@@ -1,0 +1,14 @@
+/home/jam/workspace/rust/finance/target/debug/deps/http_body-d7ffd882f7a04476.rmeta: /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/lib.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/empty.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/full.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/limited.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/next.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/size_hint.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/mod.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/box_body.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/map_data.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/map_err.rs
+
+/home/jam/workspace/rust/finance/target/debug/deps/http_body-d7ffd882f7a04476.d: /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/lib.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/empty.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/full.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/limited.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/next.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/size_hint.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/mod.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/box_body.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/map_data.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/map_err.rs
+
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/lib.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/empty.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/full.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/limited.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/next.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/size_hint.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/mod.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/box_body.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/map_data.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/map_err.rs:
