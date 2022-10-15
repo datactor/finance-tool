@@ -1,0 +1,20 @@
+/home/jam/workspace/rust/finance/target/debug/deps/librustversion-f57e907078f42e1e.so: /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/lib.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/attr.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/bound.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/constfn.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/date.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/error.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/expand.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/expr.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/iter.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/release.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/time.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/token.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/version.rs /home/jam/workspace/rust/finance/target/debug/build/rustversion-ed4500a2b28bda47/out/version.expr
+
+/home/jam/workspace/rust/finance/target/debug/deps/rustversion-f57e907078f42e1e.d: /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/lib.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/attr.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/bound.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/constfn.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/date.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/error.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/expand.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/expr.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/iter.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/release.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/time.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/token.rs /home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/version.rs /home/jam/workspace/rust/finance/target/debug/build/rustversion-ed4500a2b28bda47/out/version.expr
+
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/lib.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/attr.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/bound.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/constfn.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/date.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/error.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/expand.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/expr.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/iter.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/release.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/time.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/token.rs:
+/home/jam/.cargo/registry/src/github.com-1ecc6299db9ec823/rustversion-1.0.9/src/version.rs:
+/home/jam/workspace/rust/finance/target/debug/build/rustversion-ed4500a2b28bda47/out/version.expr:
+
+# env-dep:OUT_DIR=/home/jam/workspace/rust/finance/target/debug/build/rustversion-ed4500a2b28bda47/out
