@@ -3,9 +3,6 @@
 use crossterm::event::{read, Event, KeyCode, KeyEvent, KeyModifiers};
 use finance::app::{ApiChoice, FinanceClient};
 use reqwest::blocking::Client;
-use serde::Deserialize;
-use std::collections::BTreeMap;
-use std::sync::Mutex;
 use tui::{
     backend::CrosstermBackend,
     layout::{Alignment, Constraint, Direction, Layout},
@@ -16,6 +13,8 @@ use tui::{
 
 pub const API_KEY: &str = include_str!("../key.txt");
 
+enum Market {}
+
 /// todo! Make into real error
 enum ClientError {
     IncorrectInput,
@@ -25,39 +24,31 @@ enum ClientError {
 // 2 Make it nice
 // 3 Make it fast
 
-// 관용구 기억하기 needle in a haystack
-fn company_search(needle: &str, haystack: &[(&str, &str)]) -> String {
-    haystack
-        .iter()
-        .filter_map(|(company_name, company_symbol)| {
-            let needle = needle.to_lowercase();
-            let company_name = company_name.to_lowercase();
-            if company_name.contains(&needle) {
-                Some(format!("{}: {}", company_symbol, company_name))
-            } else {
-                None
-            }
-        })
-        .collect::<String>()
-}
-
 // Rust 1.63
 // Global variable
-static SOMETHING: Mutex<String> = Mutex::new(String::new());
+// static SOMETHING: Mutex<String> = Mutex::new(String::new());
 
-const COMPANY_STR: &str = include_str!("../company_symbols.json");
+// const COMPANY_STR: &str = include_str!("../company_symbols.json");
 
-#[derive(Debug, Deserialize)]
-struct CompanySymbolInfo((String, String));
+// #[derive(Debug, Deserialize)]
+// struct CompanySymbolInfo((String, String));
+
+// todo! Devide into four
+// 1) init -> finance client를 defalt로 하고
+// 2) read
+// 3) update
+// 4) draw
 
 fn main() -> Result<(), anyhow::Error> {
+    // 1. init
+
     // hashmap으로 검색하려면 키가 맞아야하기때문에 string의 일부로 검색하기 부적합
     // let companies: HashMap<&str, &str> = serde_json::from_str(COMPANY_STR).unwrap();
-    let companies = serde_json::from_str::<BTreeMap<&str, &str>>(COMPANY_STR)
-        .unwrap()
-        .into_iter()
-        .map(|(key, value)| (key, value))
-        .collect::<Vec<(_, _)>>();
+    // let companies = serde_json::from_str::<BTreeMap<&str, &str>>(COMPANY_STR)
+    //     .unwrap()
+    //     .into_iter()
+    //     .map(|(key, value)| (key, value))
+    //     .collect::<Vec<(_, _)>>();
 
     let stdout = std::io::stdout();
     let backend = CrosstermBackend::new(stdout);
@@ -68,14 +59,28 @@ fn main() -> Result<(), anyhow::Error> {
         client: Client::default(),
         search_string: String::new(),
         current_content: String::new(),
-        choice: ApiChoice::CompanyInfo,
+        choice: ApiChoice::CompanyProfile,
+        current_market: "US".to_string(),
+        companies: Vec::new(), // stocksymbols에서 US market을 default로
     };
+
+    let stock_symbols = client.stock_symbols()?;
+    client.companies = stock_symbols
+        .into_iter()
+        .map(|info| (info.description, info.display_symbol))
+        .collect::<Vec<(String, String)>>();
+    // let company_symbols = stock_symbols
+    //     .into_iter()
+    //     .map(|info| (info.description, info.display_symbol))
+    //     .collect::<Vec<(String, String)>>();
+    // println!("{stock_symbols:#?}");
 
     // Input
     // State change / enum, char+, char-
     // Draw
 
     loop {
+        // 2. read
         match read().unwrap() {
             Event::Key(key_event) => {
                 // println!("Got a KeyEvent: {key_event:?}");
@@ -83,14 +88,15 @@ fn main() -> Result<(), anyhow::Error> {
                     code, modifiers, ..
                 } = key_event;
                 // Typing event
+                // 3. update by keycodes
                 match (code, modifiers) {
                     (KeyCode::Char(c), modifier)
-                        if c == 'q' && modifier == KeyModifiers::CONTROL =>
+                    if c == 'q' && modifier == KeyModifiers::CONTROL =>
                     // ctrl-c는 os가 먼저 가져감
-                    {
-                        // tokio graceful shutdown도 있음
-                        break;
-                    }
+                        {
+                            // tokio graceful shutdown도 있음
+                            break;
+                        }
                     (KeyCode::Char(c), _) => {
                         client.search_string.push(c);
                     }
@@ -101,10 +107,18 @@ fn main() -> Result<(), anyhow::Error> {
                         client.search_string.pop();
                     }
                     (KeyCode::Enter, _) => {
-                        client.current_content = match client.company_profile() {
-                            Ok(search_result) => search_result,
-                            Err(e) => e.to_string(),
-                        };
+                        match client.choice {
+                            ApiChoice::CompanyProfile => {
+                                client.current_content = match client.company_profile() {
+                                    Ok(search_result) => search_result.to_string(),
+                                    Err(e) => e.to_string(),
+                                }
+                            }
+                            ApiChoice::GetMarket => {
+                                client.current_content = client.choose_market();
+                            }
+                            _ => {}
+                        }
                     }
                     (KeyCode::Tab, _) => {
                         client.switch();
@@ -120,11 +134,13 @@ fn main() -> Result<(), anyhow::Error> {
             _ => {}
         }
         if client.choice == ApiChoice::SymbolSearch && !client.search_string.is_empty() {
-            client.current_content = company_search(&client.search_string, &companies);
+            client.current_content = client.company_search(&client.search_string);
         }
         terminal.clear().unwrap();
         let current_search_string = client.search_string.clone();
         let current_content = client.current_content.clone();
+
+        // 4. draw
         terminal
             .draw(|f| {
                 let chunks = Layout::default()
@@ -136,7 +152,7 @@ fn main() -> Result<(), anyhow::Error> {
                             Constraint::Percentage(20), // Search string
                             Constraint::Percentage(60), // Results
                         ]
-                        .as_ref(),
+                            .as_ref(),
                     )
                     .split(f.size());
 

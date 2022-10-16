@@ -4,61 +4,142 @@
 // (*) 표시가 있으면 중복이 제거된 것임. --duplicates 플래그로 중복 제거 가능
 pub const API_KEY: &str = include_str!("../key.txt");
 
-pub mod app {
-    use std::{
-        fmt::{Display, Formatter},
-        str::FromStr,
-    };
+// market code (ex. DJI)
+pub const EXCHANGE_CODES: [&str; 72] = [
+    "AS", "AT", "AX", "BA", "BC", "BD", "BE", "BK", "BO", "BR", "CA", "CN", "CO", "CR", "DB", "DE",
+    "DU", "F", "HE", "HK", "HM", "IC", "IR", "IS", "JK", "JO", "KL", "KQ", "KS", "L", "LN", "LS",
+    "MC", "ME", "MI", "MU", "MX", "NE", "NL", "NS", "NZ", "OL", "PA", "PM", "PR", "QA", "RG", "SA",
+    "SG", "SI", "SN", "SR", "SS", "ST", "SW", "SZ", "T", "TA", "TL", "TO", "TW", "TWO", "US", "V",
+    "VI", "VN", "VS", "WA", "HA", "SX", "TG", "SC",
+];
 
-    use anyhow::{anyhow, Context, Error};
+pub mod app {
+    use std::fmt::Debug;
+
+    use anyhow::{Context, Error};
     use reqwest::blocking::Client;
-    use serde::{de::DeserializeOwned, Deserialize, Serialize};
+    use serde::de::DeserializeOwned;
     use tui::{
         style::{Color, Modifier, Style},
         text::Span,
     };
 
-    use crate::API_KEY;
+    use crate::{
+        api::{CompanyProfile, StockSymbol},
+        API_KEY, EXCHANGE_CODES,
+    };
 
     pub struct FinanceClient {
         pub url: String,
         pub client: Client,
-        pub search_string: String,   // push + pop
+        pub search_string: String,   // push + pop // MSFT
         pub current_content: String, // Results etc. of searches
         pub choice: ApiChoice,
+        pub current_market: String,
+        pub companies: Vec<(String, String)>,
     }
 
+    /// Vec<StockSymbol>
     impl FinanceClient {
-        pub fn finnhub_request<T: DeserializeOwned + Display>(
-            // deserializeOwned?
-            &self,
-            url: String,
-        ) -> Result<String, Error> {
+        pub fn single_request<T: DeserializeOwned + Debug>(&self, url: String) -> Result<T, Error> {
             let response = self
                 .client
                 .get(url)
                 .header("X-Finnhub-Token", API_KEY)
-                .send() // anyhow Error를 추가하면 ?를 쓸 수 있다
-                .with_context(|| "Couldn't send via client")?; // expect와 비슷한 역할
+                .send()
+                .with_context(|| "Couldn't send via client")?;
             let text = response.text().with_context(|| "No text for some reason")?;
+
             let finnhub_reply: T = serde_json::from_str(&text).with_context(|| {
                 format!(
-                    "Couldn't deserialize {} into CompanyInfo struct.\nText from Finnhub: '{text}'",
+                    "Couldn't deserialize {} into CompanyProfile struct.\nText from Finnhub: '{text}'",
                     self.search_string
                 )
             })?;
-            Ok(finnhub_reply.to_string())
-        }
-        // todo! remove unwraps
-        pub fn company_profile(&self) -> Result<String, Error> {
-            let url = format!("{}/stock/profile2?symbol={}", self.url, self.search_string);
-            let company_info = self.finnhub_request::<CompanyProfile>(url)?;
-            Ok(company_info)
+            Ok(finnhub_reply)
         }
 
-        pub fn stock_symbol(&self) -> Result<String, Error> {
-            todo!() // 조용히해라(표현식이 반환값이 없어도 에러 뜨지마라)
-                    // /stock/symbol?exchange=US
+        pub fn multi_request<T: DeserializeOwned + Debug>(
+            &self,
+            url: String,
+        ) -> Result<Vec<T>, Error> {
+            let response = self
+                .client
+                .get(url)
+                .header("X-Finnhub-Token", API_KEY)
+                .send()
+                .with_context(|| "Couldn't send via client")?;
+            let text = response.text().with_context(|| "No text for some reason")?;
+
+            let finnhub_reply: Vec<T> = serde_json::from_str(&text).with_context(|| {
+                format!(
+                    "Couldn't deserialize {} into CompanyProfile struct.\nText from Finnhub: '{text}'",
+                    self.search_string
+                )
+            })?;
+            Ok(finnhub_reply)
+        }
+
+        // 관용구 기억하기 needle in a haystack
+        pub fn company_search(&self, needle: &str) -> String {
+            self.companies
+                .iter()
+                .filter_map(|(company_name, company_symbol)| {
+                    let needle = needle.to_lowercase();
+                    let company_name = company_name.to_lowercase();
+                    if company_name.contains(&needle) {
+                        Some(format!("{}: {}\n", company_symbol, company_name))
+                    } else {
+                        None
+                    }
+                })
+                .collect::<String>()
+        }
+
+        // todo! remove unwraps
+        /// /stock/profile?symbol=AAPL
+        pub fn company_profile(&self) -> Result<String, Error> {
+            let url = format!("{}/stock/profile2?symbol={}", self.url, self.search_string);
+            let company_info = self.single_request::<CompanyProfile>(url)?;
+            Ok(company_info.to_string())
+        }
+
+        pub fn stock_symbols(&self) -> Result<Vec<StockSymbol>, Error> {
+            //todo!() // 조용히해라(표현식이 반환값이 없어도 에러 뜨지마라)
+            // /stock/symbol?exchange=US
+            let url = format!("{}/stock/symbol?exchange={}", self.url, self.current_market);
+            let stock_symbols = self.multi_request::<StockSymbol>(url)?;
+            Ok(stock_symbols)
+        }
+
+        /// User hits enter, checks to see if market exists, if not, stay w
+        pub fn choose_market(&mut self) -> String {
+            match EXCHANGE_CODES
+                .iter()
+                .find(|code| **code == self.search_string)
+            {
+                // e.g. user types "US", which is valid
+                Some(good_market_code) => {
+                    self.current_market = good_market_code.to_string();
+                    match self.stock_symbols() {
+                        Ok(stock_symbols) => {
+                            self.companies = stock_symbols
+                                .into_iter()
+                                .map(|info| (info.description, info.display_symbol))
+                                .collect::<Vec<(String, String)>>();
+                            format!(
+                                "Successfully got company info from market {}",
+                                self.current_market
+                            )
+                        }
+                        Err(_) => {
+                            format!("No market called {} exists", self.search_string)
+                        }
+                    }
+                }
+                // user types something that isn't a market
+                None => format!("No market called {} exists", self.search_string),
+            }
         }
 
         pub fn company_news(&self) -> Result<String, Error> {
@@ -67,56 +148,50 @@ pub mod app {
 
         pub fn market_news(&self) -> Result<String, Error> {
             todo!() // /news?category=general
-                    // enum Market {
-                    //     general,
-                    //     forex,
-                    //     crypto,
-                    //     merger
-                    // }
+            // enum Market {
+            //     general,
+            //     forex,
+            //     crypto,
+            //     merger
+            // }
         }
 
         pub fn switch(&mut self) {
             use ApiChoice::*;
             self.choice = match self.choice {
-                SymbolSearch => CompanyInfo,
-                CompanyInfo => StockSymbol,
+                SymbolSearch => CompanyProfile,
+                CompanyProfile => StockSymbol,
                 StockSymbol => MarketNews,
                 MarketNews => CompanyNews,
-                CompanyNews => SymbolSearch,
+                CompanyNews => GetMarket,
+                GetMarket => SymbolSearch,
             }
         }
-        pub fn all_choices(&self) -> Vec<Span<'static>> {
+        pub fn all_choices(&self) -> Vec<Span> {
             use ApiChoice::*; // SymbolSearch
             let choices = [
                 SymbolSearch,
-                CompanyInfo,
+                CompanyProfile,
                 StockSymbol,
                 MarketNews,
                 CompanyNews,
+                GetMarket,
             ];
             let choices = choices.into_iter().map(|choice| choice.to_string());
-            let mut even_odd = std::iter::repeat(true);
-            // let choices = vec![format!("{}", SymbolSearch), format!("{}", CompanyInfo)];
 
             choices
                 .into_iter()
                 .map(|choice_string| {
-                    let black = even_odd.next().unwrap();
-                    let bg = if black { Color::Black } else { Color::DarkGray };
                     let current_choice = format!("{}", self.choice);
                     if choice_string == current_choice {
                         Span::styled(
-                            format!("{choice_string} "),
+                            format!(" {choice_string} "),
                             Style::default()
-                                .fg(Color::LightYellow)
-                                .bg(Color::Blue)
+                                .bg(Color::Gray)
                                 .add_modifier(Modifier::UNDERLINED),
                         )
                     } else {
-                        Span::styled(
-                            format!("{choice_string} "),
-                            Style::default().fg(Color::White).bg(bg),
-                        )
+                        Span::styled(format!(" {choice_string} "), Style::default())
                     }
                 })
                 .collect::<Vec<_>>()
@@ -128,10 +203,11 @@ pub mod app {
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     pub enum ApiChoice {
         SymbolSearch,
-        CompanyInfo,
+        CompanyProfile,
         StockSymbol,
         MarketNews,
         CompanyNews,
+        GetMarket,
     }
 
     impl std::fmt::Display for ApiChoice {
@@ -139,10 +215,11 @@ pub mod app {
             use ApiChoice::*;
             let output = match self {
                 SymbolSearch => "Company symbol",
-                CompanyInfo => "Company info",
+                CompanyProfile => "Company info",
                 StockSymbol => "Stock symbol",
-                MarketNews => "Market news",
+                MarketNews => "News",
                 CompanyNews => "Company news",
+                GetMarket => "Get market",
             };
             write!(f, "{}", output)
         }
@@ -150,100 +227,16 @@ pub mod app {
 
     // strum을 쓰면 Enumiter를 쓸 수 있음
     // Todo!() probably delete this because it feels like overkill
-    #[derive(Debug, Display, EnumIter, PartialEq, Eq)]
-    pub enum ExchangeCodes {
-        AS,
-        AT,
-        AX,
-        BA,
-        BC,
-        BD,
-        BE,
-        BK,
-        BO,
-        BR,
-        CA,
-        CN,
-        CO,
-        CR,
-        DB,
-        DE,
-        DU,
-        F,
-        HE,
-        HK,
-        HM,
-        IC,
-        IR,
-        IS,
-        JK,
-        JO,
-        KL,
-        KQ,
-        KS,
-        L,
-        LN,
-        LS,
-        MC,
-        ME,
-        MI,
-        MU,
-        MX,
-        NE,
-        NL,
-        NS,
-        NZ,
-        OL,
-        PA,
-        PM,
-        PR,
-        QA,
-        RG,
-        SA,
-        SG,
-        SI,
-        SN,
-        SR,
-        SS,
-        ST,
-        SW,
-        SZ,
-        T,
-        TA,
-        TL,
-        TO,
-        TW,
-        TWO,
-        US,
-        V,
-        VI,
-        VN,
-        VS,
-        WA,
-        HA,
-        SX,
-        TG,
-        SC,
-    }
+    //     // fileter_map 함수는 some이면 유지 none이면 버리기
 
-    use strum::IntoEnumIterator;
-    use strum_macros::{Display, EnumIter};
+    // Serialize = into JSON
+    //
+    // Deserialize = into Rust type
+}
 
-    impl FromStr for ExchangeCodes {
-        type Err = anyhow::Error;
-
-        // fileter_map 함수는 some이면 유지 none이면 버리기
-        fn from_str(s: &str) -> Result<Self, Self::Err> {
-            ExchangeCodes::iter()
-                .find(|code| &code.to_string() == s)
-                .ok_or_else(|| anyhow!("Couldn't get ExchangeCode from {s}"))
-        }
-    }
-
-    /// Serialize = into JSON
-    ///
-    /// Deserialize = into Rust type
-    #[derive(Debug, Serialize, Deserialize)]
+/// Structs add enums for the Finnhub API.
+pub mod api {
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     pub struct CompanyProfile {
         country: String,
         currency: String,
@@ -262,7 +255,7 @@ pub mod app {
     }
 
     impl std::fmt::Display for CompanyProfile {
-        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             let CompanyProfile {
                 country,
                 currency,
@@ -295,10 +288,7 @@ pub mod app {
             write!(f, "{}", company_info) // 왜?
         }
     }
-}
 
-/// Structs add enums for the Finnhub API.
-pub mod api {
     use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize)]
@@ -312,33 +302,33 @@ pub mod api {
         pub type_: String,
     }
 
-    #[derive(Serialize, Deserialize)]
-    struct StockSymbol {
-        currency: String,
-        description: String,
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct StockSymbol {
+        pub currency: String,
+        pub description: String,
         #[serde(rename = "displaySymbol")]
-        display_symbol: String,
-        figi: String,
-        mic: String,
-        symbol: String,
+        pub display_symbol: String,
+        pub figi: String,
+        pub mic: String,
+        pub symbol: String,
         #[serde(rename = "type")]
-        type_: String,
+        pub type_: String,
     }
 
-    #[derive(Serialize, Deserialize)]
-    struct MarketNews {
-        category: String,
-        datetime: i64,
-        headline: String,
-        id: i64,
-        image: String,
-        related: String,
-        source: String,
-        summary: String,
-        url: String,
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct MarketNews {
+        pub category: String,
+        pub datetime: i64,
+        pub headline: String,
+        pub id: i64,
+        pub image: String,
+        pub related: String,
+        pub source: String,
+        pub summary: String,
+        pub url: String,
     }
 
-    #[derive(Serialize, Deserialize)]
+    #[derive(Debug, Serialize, Deserialize)]
     struct CompanyNews {
         category: String,
         datetime: i64,
